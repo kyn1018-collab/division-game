@@ -1,0 +1,181 @@
+:root {
+    --primary-neon: #00f2ff;
+    --secondary-neon: #ff00ff;
+    --bg-dark: #0a0a12;
+    --track-color: #1a1a2e;
+    --text-light: #ffffff;
+    --accent-gold: #ffcc00;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 90vh;
+    background-color: var(--track-color);
+    border: 4px solid var(--primary-neon);
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+    overflow: hidden;
+}
+
+/* Road Animation */
+.track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background-image: linear-gradient(0deg, transparent 45%, rgba(0, 242, 255, 0.1) 50%, transparent 55%);
+    background-size: 100% 100px;
+    animation: moveTrack 2s linear infinite;
+}
+
+@keyframes moveTrack {
+    0% { transform: translateY(-50%); }
+    100% { transform: translateY(0); }
+}
+
+/* UI Elements */
+#hud {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 10;
+}
+
+.stat-box {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--primary-neon);
+    font-weight: bold;
+}
+
+#problem-container {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 10, 18, 0.9);
+    padding: 30px;
+    border-radius: 20px;
+    border: 2px solid var(--secondary-neon);
+    text-align: center;
+    width: 80%;
+    z-index: 20;
+    display: none;
+}
+
+#problem-text {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: var(--accent-gold);
+}
+
+.options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.option-btn {
+    padding: 15px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary-neon);
+    color: var(--bg-dark);
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    font-weight: bold;
+}
+
+.option-btn:hover {
+    transform: scale(1.05);
+    background: #ffffff;
+}
+
+/* Cars */
+#player-car {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 100px;
+    transition: left 0.3s ease-out;
+    z-index: 5;
+}
+
+.car-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    color: var(--primary-neon);
+    text-shadow: 0 0 10px var(--primary-neon);
+}
+
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 250px;
+}
+
+.main-btn {
+    padding: 20px;
+    font-size: 1.5rem;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(45deg, var(--primary-neon), var(--secondary-neon));
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 0, 255, 0.4);
+}
+
+.main-btn:hover {
+    filter: brightness(1.2);
+}
+
+#level-selection {
+    display: none;
+}
