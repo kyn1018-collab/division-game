@@ -13,46 +13,41 @@
         <div id="hud">
             <div class="stat-box">점수: <span id="score">0</span></div>
             <div class="stat-box">레벨: <span id="level-display">-</span></div>
-            <div class="stat-box">남은 시간: <span id="timer">60</span>s</div>
+            <div class="stat-box">시간: <span id="timer">60</span>s</div>
+        </div>
+
+        <div id="problem-banner">
+            <div id="problem-text">준비...</div>
         </div>
 
         <div id="player-car">
             <img src="car.png" alt="Player Car" id="car-img" class="car-img">
         </div>
 
-        <div id="problem-container">
-            <div id="problem-text">123 ÷ 45 = ?</div>
-            <div class="options">
-                <button class="option-btn" onclick="checkAnswer(this)">1</button>
-                <button class="option-btn" onclick="checkAnswer(this)">2</button>
-                <button class="option-btn" onclick="checkAnswer(this)">3</button>
-                <button class="option-btn" onclick="checkAnswer(this)">4</button>
-            </div>
-        </div>
-
         <!-- Start Screen -->
         <div id="start-screen" class="screen">
-            <h1>수학 레이싱</h1>
+            <h1>수학 레이싱<br><small style="font-size: 1rem; color: #aaa;">세자리수 ÷ 두자리수</small></h1>
             <div class="btn-group">
                 <button class="main-btn" onclick="showLevels()">게임 시작</button>
             </div>
+            <p style="margin-top: 20px; font-size: 0.8rem; color: #888;">← → 화살표 키 또는 터치로 이동</p>
         </div>
 
         <!-- Level Selection -->
         <div id="level-selection" class="screen">
             <h1>난이도 선택</h1>
             <div class="btn-group">
-                <button class="main-btn" onclick="startGame('하')">하 (기초)</button>
-                <button class="main-btn" onclick="startGame('중')">중 (연습)</button>
-                <button class="main-btn" onclick="startGame('상')">상 (도전)</button>
+                <button class="main-btn" onclick="startGame('하')">하 (초보)</button>
+                <button class="main-btn" onclick="startGame('중')">중 (숙련)</button>
+                <button class="main-btn" onclick="startGame('상')">상 (달인)</button>
             </div>
         </div>
 
         <!-- Result Screen -->
-        <div id="result-screen" class="screen" style="display: none;">
-            <h1>결과</h1>
+        <div id="result-screen" class="screen">
+            <h1>경기 종료!</h1>
             <div style="font-size: 2rem; margin-bottom: 20px;">최종 점수: <span id="final-score">0</span></div>
-            <button class="main-btn" onclick="location.reload()">다시 하기</button>
+            <button class="main-btn" onclick="location.reload()">다시 도전</button>
         </div>
     </div>
 

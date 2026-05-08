@@ -4,16 +4,47 @@ let currentLevel = '하';
 let correctAnswer = 0;
 let gameActive = false;
 let timerInterval;
+let gameLoop;
+let lanes = [10, 35, 60, 85]; // Lane positions in %
+let currentLane = 1; // Start in the second lane
+let objects = []; // Active answer gates
 
-const problemContainer = document.getElementById('problem-container');
-const problemText = document.getElementById('problem-text');
-const optionsContainer = document.querySelector('.options');
+const car = document.getElementById('player-car');
 const scoreDisplay = document.getElementById('score');
 const timerDisplay = document.getElementById('timer');
 const levelDisplay = document.getElementById('level-display');
 const finalScoreDisplay = document.getElementById('final-score');
-const car = document.getElementById('player-car');
-const track = document.querySelector('.track');
+const gameContainer = document.getElementById('game-container');
+const problemText = document.getElementById('problem-text');
+
+// Key controls
+document.addEventListener('keydown', (e) => {
+    if (!gameActive) return;
+    if (e.key === 'ArrowLeft' && currentLane > 0) {
+        currentLane--;
+        updateCarPosition();
+    } else if (e.key === 'ArrowRight' && currentLane < 3) {
+        currentLane++;
+        updateCarPosition();
+    }
+});
+
+// Touch controls for tablets
+gameContainer.addEventListener('touchstart', (e) => {
+    if (!gameActive) return;
+    const touchX = e.touches[0].clientX;
+    const screenMid = window.innerWidth / 2;
+    if (touchX < screenMid && currentLane > 0) {
+        currentLane--;
+    } else if (touchX >= screenMid && currentLane < 3) {
+        currentLane++;
+    }
+    updateCarPosition();
+});
+
+function updateCarPosition() {
+    car.style.left = lanes[currentLane] + '%';
+}
 
 function showLevels() {
     document.getElementById('start-screen').style.display = 'none';
@@ -25,14 +56,18 @@ function startGame(level) {
     score = 0;
     timeLeft = 60;
     gameActive = true;
+    objects = [];
+    currentLane = 1;
+    updateCarPosition();
     
     document.getElementById('level-selection').style.display = 'none';
     levelDisplay.innerText = currentLevel;
     scoreDisplay.innerText = score;
     timerDisplay.innerText = timeLeft;
     
-    nextQuestion();
     startTimer();
+    spawnProblem();
+    runGameLoop();
 }
 
 function startTimer() {
@@ -45,89 +80,116 @@ function startTimer() {
     }, 1000);
 }
 
-function nextQuestion() {
+function spawnProblem() {
     if (!gameActive) return;
-    
+
     let divisor, dividend;
-    
     if (currentLevel === '하') {
-        divisor = Math.floor(Math.random() * 10) + 10; // 10-19
-        correctAnswer = Math.floor(Math.random() * 15) + 2; // 2-16
+        divisor = Math.floor(Math.random() * 10) + 10;
+        correctAnswer = Math.floor(Math.random() * 15) + 2;
     } else if (currentLevel === '중') {
-        divisor = Math.floor(Math.random() * 30) + 20; // 20-49
-        correctAnswer = Math.floor(Math.random() * 20) + 5; // 5-24
+        divisor = Math.floor(Math.random() * 30) + 20;
+        correctAnswer = Math.floor(Math.random() * 20) + 5;
     } else {
-        divisor = Math.floor(Math.random() * 50) + 50; // 50-99
-        correctAnswer = Math.floor(Math.random() * 30) + 5; // 5-34
+        divisor = Math.floor(Math.random() * 50) + 50;
+        correctAnswer = Math.floor(Math.random() * 30) + 5;
     }
-    
     dividend = divisor * correctAnswer;
     
-    // 4th grade division might have remainders, but for a game, clean division is often better for flow.
-    // Let's add a small random remainder sometimes to make it harder at '상' level? 
-    // No, let's keep it clean for now to avoid confusion during racing.
-    
     problemText.innerText = `${dividend} ÷ ${divisor} = ?`;
-    problemContainer.style.display = 'block';
     
-    generateOptions(correctAnswer);
-}
-
-function generateOptions(correct) {
-    const options = [correct];
+    // Create answer gates
+    const options = [correctAnswer];
     while (options.length < 4) {
-        let wrong = correct + (Math.floor(Math.random() * 10) - 5);
-        if (wrong > 0 && !options.includes(wrong)) {
+        let wrong = correctAnswer + (Math.floor(Math.random() * 10) - 5);
+        if (wrong > 0 && !options.includes(wrong) && wrong !== correctAnswer) {
             options.push(wrong);
         }
     }
-    
-    // Shuffle options
     options.sort(() => Math.random() - 0.5);
-    
-    const btns = document.querySelectorAll('.option-btn');
-    btns.forEach((btn, index) => {
-        btn.innerText = options[index];
+
+    const gateGroup = {
+        y: -100,
+        answered: false,
+        elements: []
+    };
+
+    options.forEach((val, i) => {
+        const gate = document.createElement('div');
+        gate.className = 'gate';
+        gate.innerText = val;
+        gate.style.left = lanes[i] + '%';
+        gate.style.top = '-100px';
+        gameContainer.appendChild(gate);
+        gateGroup.elements.push({ el: gate, value: val, lane: i });
     });
+
+    objects.push(gateGroup);
 }
 
-function checkAnswer(btn) {
+function runGameLoop() {
     if (!gameActive) return;
-    
-    const selected = parseInt(btn.innerText);
-    if (selected === correctAnswer) {
-        score += 10;
-        scoreDisplay.innerText = score;
-        showFeedback(true);
-    } else {
-        showFeedback(false);
-        timeLeft = Math.max(0, timeLeft - 5);
-    }
-    
-    problemContainer.style.display = 'none';
-    setTimeout(nextQuestion, 1000);
+
+    objects.forEach((group, groupIndex) => {
+        group.y += (currentLevel === '상' ? 7 : (currentLevel === '중' ? 5 : 4));
+        
+        group.elements.forEach(gateObj => {
+            gateObj.el.style.top = group.y + 'px';
+        });
+
+        // Collision Check
+        const carY = car.offsetTop;
+        if (!group.answered && group.y > carY - 50 && group.y < carY + 50) {
+            const hitGate = group.elements.find(g => g.lane === currentLane);
+            if (hitGate) {
+                group.answered = true;
+                if (hitGate.value === correctAnswer) {
+                    score += 10;
+                    scoreDisplay.innerText = score;
+                    showFeedback(true);
+                } else {
+                    timeLeft = Math.max(0, timeLeft - 5);
+                    showFeedback(false);
+                }
+                
+                // Remove gates after a short delay
+                setTimeout(() => {
+                    group.elements.forEach(g => g.el.remove());
+                    objects.splice(groupIndex, 1);
+                    spawnProblem();
+                }, 500);
+            }
+        }
+
+        // Remove if off screen
+        if (group.y > window.innerHeight) {
+            group.elements.forEach(g => g.el.remove());
+            objects.splice(groupIndex, 1);
+            spawnProblem();
+        }
+    });
+
+    gameLoop = requestAnimationFrame(runGameLoop);
 }
 
 function showFeedback(isCorrect) {
     const originalFilter = car.style.filter;
     if (isCorrect) {
         car.style.filter = 'drop-shadow(0 0 20px #00ff00) brightness(1.5)';
-        track.style.animationDuration = '0.5s';
     } else {
         car.style.filter = 'drop-shadow(0 0 20px #ff0000) brightness(0.5)';
-        track.style.animationDuration = '5s';
     }
     
     setTimeout(() => {
         car.style.filter = originalFilter;
-        track.style.animationDuration = '2s';
     }, 1000);
 }
 
 function endGame() {
     gameActive = false;
+    cancelAnimationFrame(gameLoop);
     clearInterval(timerInterval);
-    problemContainer.style.display = 'none';
+    objects.forEach(group => group.elements.forEach(g => g.el.remove()));
     finalScoreDisplay.innerText = score;
     document.getElementById('result-screen').style.display = 'flex';
 }
