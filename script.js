@@ -1,5 +1,5 @@
 let score = 0;
-let timeLeft = 60;
+let timeLeft = 180;
 let currentLevel = '하';
 let correctAnswer = 0;
 let gameActive = false;
@@ -54,7 +54,7 @@ function showLevels() {
 function startGame(level) {
     currentLevel = level;
     score = 0;
-    timeLeft = 60;
+    timeLeft = 180;
     gameActive = true;
     objects = [];
     currentLane = 1;
