@@ -46,7 +46,7 @@ body {
         linear-gradient(90deg, transparent 24%, rgba(0, 242, 255, 0.1) 25%, transparent 26%, transparent 49%, rgba(0, 242, 255, 0.1) 50%, transparent 51%, transparent 74%, rgba(0, 242, 255, 0.1) 75%, transparent 76%),
         linear-gradient(0deg, transparent 45%, rgba(255, 255, 255, 0.05) 50%, transparent 55%);
     background-size: 100% 100%, 100% 100px;
-    animation: moveTrack 1.5s linear infinite;
+    animation: moveTrack 4.5s linear infinite;
 }
 
 @keyframes moveTrack {
