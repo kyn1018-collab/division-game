@@ -131,7 +131,7 @@ function runGameLoop() {
     if (!gameActive) return;
 
     objects.forEach((group, groupIndex) => {
-        group.y += (currentLevel === '상' ? 1.0 : (currentLevel === '중' ? 0.65 : 0.33));
+        group.y += (currentLevel === '상' ? 2.0 : (currentLevel === '중' ? 1.3 : 0.66));
         
         group.elements.forEach(gateObj => {
             gateObj.el.style.top = group.y + 'px';
